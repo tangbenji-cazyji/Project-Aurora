@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="time_title">TASMAN LOGIC // CONFIG</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+</head>
+
+<body class="bg-slate-950 text-slate-200 font-sans selection:bg-rose-500/30 overflow-hidden">
+    <div
+        class="fixed inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black pointer-events-none">
+    </div>
+
+    <main class="relative z-10 p-8 max-w-6xl mx-auto h-screen flex flex-col">
+        <header class="flex justify-between items-center border-b border-white/5 pb-6 mb-8">
+            <div>
+                <h1 class="text-2xl font-black text-rose-500 tracking-tighter uppercase" data-i18n="time_curator">TIME
+                    STRATEGIST // TIME</h1>
+                <p class="text-[10px] text-slate-500 font-technical uppercase">// ECONOMIC & PREDICTIVE LOAD BALANCING
+                </p>
+            </div>
+            <div class="flex gap-4 items-center">
+                <a href="./index.html"
+                    class="px-4 py-2 border border-white/10 rounded text-[10px] hover:bg-slate-800 transition-colors uppercase font-bold tracking-widest text-slate-400"
+                    data-i18n="back_to_hud">Back
+                    to HUD</a>
+                <button id="save-btn"
+                    class="px-8 py-2 bg-rose-600/20 border border-rose-500/50 rounded text-[10px] hover:bg-rose-500 hover:text-white transition-all uppercase font-black tracking-[0.2em] text-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.1)]"
+                    data-i18n="save_btn">SAVE CHANGES</button>
+            </div>
+        </header>
+
+        <!-- AURA Neural Console (Economic Extension) -->
+        <div class="mb-8 p-4 bg-rose-500/5 border border-rose-500/20 rounded-lg relative overflow-hidden group">
+            <div class="absolute top-0 right-0 p-2 opacity-20">
+                <svg class="w-12 h-12 text-rose-500" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" />
+                </svg>
+            </div>
+            <div class="flex items-start gap-4 relative z-10">
+                <div class="mt-1">
+                    <div id="ai-status-pulse"
+                        class="w-2 h-2 bg-rose-500 rounded-full animate-ping opacity-0 transition-opacity"></div>
+                </div>
+                <div class="flex-1">
+                    <p id="ai-insight-text" class="text-[10px] leading-relaxed text-rose-300 italic font-medium mb-4"
+                        data-i18n="waiting_cmd">
+                        Awaiting economic arbitration commands...
+                    </p>
+                    <div class="relative">
+                        <span
+                            class="absolute left-0 top-1/2 -translate-y-1/2 text-[10px] font-black text-rose-500/50 px-2 italic">CMD></span>
+                        <input type="text" id="ai-command-input"
+                            class="w-full bg-black/40 border border-rose-500/30 rounded py-2 pl-12 pr-4 text-[10px] text-rose-100 placeholder:text-rose-900 focus:outline-none focus:border-rose-500/60 transition-all font-technical"
+                            placeholder="..." data-i18n-placeholder="cmd_placeholder">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-1 grid grid-cols-1 gap-8 overflow-hidden">
+            <!-- 24h Grid Timeline -->
+            <section class="glass-panel rounded-xl p-8 border-white/5 relative flex flex-col">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="space-y-1">
+                        <h2 class="text-xs font-bold text-rose-500 uppercase tracking-[0.2em]"
+                            data-i18n="grid_timeline">24h GRID TIMELINE</h2>
+                        <p class="text-[10px] text-slate-600 uppercase italic font-technical" data-i18n="l_tou_desc">//
+                            L-TOU POLICY
+                            VISUALIZATION</p>
+                    </div>
+                    <div class="flex gap-4 text-[8px] font-black tracking-widest uppercase">
+                        <div class="flex items-center gap-2"><span class="w-2 h-2 bg-rose-500 rounded-sm"></span> <span
+                                data-i18n="peak_label">Peak</span>
+                        </div>
+                        <div class="flex items-center gap-2"><span class="w-2 h-2 bg-amber-500 rounded-sm"></span>
+                            <span data-i18n="shoulder_label">Shoulder</span>
+                        </div>
+                        <div class="flex items-center gap-2"><span class="w-2 h-2 bg-emerald-500 rounded-sm"></span>
+                            <span data-i18n="offpeak_label">Off-Peak</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative flex-1 mt-4">
+                    <!-- Timeline Ruler -->
+                    <div id="timeline-container"
+                        class="relative h-24 bg-white/5 rounded-lg overflow-hidden flex border border-white/10">
+                        <!-- Periods will be injected here -->
+                    </div>
+
+                    <!-- Time Markers -->
+                    <div class="flex justify-between mt-2 px-1 text-[8px] text-slate-600 font-technical">
+                        <span>00h</span><span>04h</span><span>08h</span><span>12h</span><span>16h</span><span>20h</span><span>24h</span>
+                    </div>
+
+                    <!-- Live Playhead -->
+                    <div id="live-playhead"
+                        class="absolute top-0 bottom-0 w-px bg-white shadow-[0_0_10px_white] z-20 pointer-events-none transition-all duration-1000 origin-bottom"
+                        style="left: 0%">
+                        <div class="absolute -top-1 -left-1 w-2 h-2 bg-white rounded-full"></div>
+                        <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-white text-black px-1.5 py-0.5 text-[7px] font-black rounded whitespace-nowrap"
+                            data-i18n="now_label">
+                            NOW</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-12 mt-12">
+                    <div class="space-y-8">
+                        <div class="flex justify-between items-center">
+                            <div class="space-y-1">
+                                <h2 class="text-xs font-bold text-rose-500 uppercase tracking-[0.2em]"
+                                    data-i18n="peak_load">PEAK BASE LOAD</h2>
+                                <p class="text-[10px] text-slate-600 uppercase italic font-technical"
+                                    data-i18n="peak_period_ceiling">// PEAK PERIOD
+                                    ENERGY CEILING</p>
+                            </div>
+                            <span id="peak-val" class="text-4xl font-technical text-rose-400">1.20<small
+                                    class="text-sm">kW</small></span>
+                        </div>
+                        <input type="range" id="peak-slider" min="0.5" max="5.0" step="0.1" value="1.2"
+                            class="w-full h-1 bg-white/5 rounded-lg appearance-none cursor-pointer accent-rose-500 border border-white/5">
+                    </div>
+
+                    <div class="space-y-8 border-l border-white/5 pl-12">
+                        <div class="flex justify-between items-center">
+                            <div class="space-y-1">
+                                <h2 class="text-xs font-bold text-green-500 uppercase tracking-[0.2em]"
+                                    data-i18n="offpeak_load">OFF-PEAK BASE LOAD</h2>
+                                <p class="text-[10px] text-slate-600 uppercase italic font-technical"
+                                    data-i18n="offpeak_period_floor">// OFF-PEAK ENERGY
+                                    FLOOR</p>
+                            </div>
+                            <span id="offpeak-val" class="text-4xl font-technical text-green-400">0.85<small
+                                    class="text-sm">kW</small></span>
+                        </div>
+                        <input type="range" id="offpeak-slider" min="0.2" max="3.0" step="0.1" value="0.85"
+                            class="w-full h-1 bg-white/5 rounded-lg appearance-none cursor-pointer accent-green-500 border border-white/5">
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <footer class="mt-auto pt-8 border-t border-white/5 text-[9px] text-slate-600 flex justify-between uppercase">
+            <span id="status-text" class="font-technical tracking-widest" data-i18n="sync_grid_clock">Pricing:
+                Synchronizing with tasmania grid
+                clock...</span>
+            <span class="font-technical" data-i18n="time_v_status">TIME STRATEGIST V2.0 // NEURAL INTEGRATED</span>
+        </footer>
+    </main>
+
+    <script type="module">
+        import { StateManager } from './state-manager.js';
+        import { AIOrchestrator } from './ai-orchestrator.js';
+        import { TimeStrategist } from './time-strategist.js';
+        import { TRANSLATIONS } from './i18n.js';
+
+        const auraAI = new AIOrchestrator();
+        const strategist = new TimeStrategist();
+
+        const peakSlider = document.getElementById('peak-slider');
+        const peakVal = document.getElementById('peak-val');
+        const offpeakSlider = document.getElementById('offpeak-slider');
+        const offpeakVal = document.getElementById('offpeak-val');
+        const saveBtn = document.getElementById('save-btn');
+        const statusText = document.getElementById('status-text');
+
+        // New UI Elements
+        const timelineContainer = document.getElementById('timeline-container');
+        const livePlayhead = document.getElementById('live-playhead');
+        const aiCommandInput = document.getElementById('ai-command-input');
+        const aiInsightText = document.getElementById('ai-insight-text');
+        const aiStatusPulse = document.getElementById('ai-status-pulse');
+
+        const lang = localStorage.getItem('tasman-lang') || 'zh';
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (TRANSLATIONS[lang][key]) {
+                if (el.tagName === 'TITLE') {
+                    document.title = TRANSLATIONS[lang][key];
+                } else {
+                    el.textContent = TRANSLATIONS[lang][key];
+                }
+            }
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (TRANSLATIONS[lang][key]) el.placeholder = TRANSLATIONS[lang][key];
+        });
+
+        let state = StateManager.get();
+        let pendingTime = { ...state.time };
+
+        const renderTimeline = () => {
+            if (!timelineContainer) return;
+            timelineContainer.innerHTML = '';
+
+            // Define segments based on strategist.gridPolicy
+            const policy = strategist.gridPolicy;
+            const segments = [
+                { start: 0, end: 7, type: 'offpeak', color: 'bg-emerald-500/30' },
+                { start: 7, end: 10, type: 'peak', color: 'bg-rose-500/30' },
+                { start: 10, end: 16, type: 'shoulder', color: 'bg-amber-500/30' },
+                { start: 16, end: 21, type: 'peak', color: 'bg-rose-500/30' },
+                { start: 21, end: 24, type: 'offpeak', color: 'bg-emerald-500/30' }
+            ];
+
+            segments.forEach(seg => {
+                const width = ((seg.end - seg.start) / 24) * 100;
+                const el = document.createElement('div');
+                el.className = `h-full ${seg.color} border-r border-white/5 relative group cursor-help`;
+                el.style.width = `${width}%`;
+
+                // Tooltip
+                const tooltip = document.createElement('div');
+                tooltip.className = "absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 bg-slate-900 border border-white/10 rounded text-[7px] text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-30 pointer-events-none";
+                const typeLabel = TRANSLATIONS[lang][`${seg.type}_label`] || seg.type.toUpperCase();
+                tooltip.textContent = `${typeLabel}: ${seg.start}:00 - ${seg.end}:00`;
+                el.appendChild(tooltip);
+
+                timelineContainer.appendChild(el);
+            });
+        };
+
+        const updateTick = () => {
+            if (!livePlayhead) return;
+            const now = new Date(); // Hobart Time placeholder handled by component later if needed, but locally sync is fine
+            const totalMinutes = (now.getHours() * 60) + now.getMinutes();
+            const percent = (totalMinutes / (24 * 60)) * 100;
+            livePlayhead.style.left = `${percent}%`;
+
+            const current = strategist.getCurrentPrice(now);
+            const statusTemplate = TRANSLATIONS[lang].arb_status_window;
+            const periodLabel = TRANSLATIONS[lang][`${current.period}_label`] || current.period.toUpperCase();
+            statusText.textContent = statusTemplate.replace('{period}', periodLabel).replace('{price}', current.price);
+        };
+
+        const updateUI = (s) => {
+            if (!s) return;
+            peakSlider.value = s.peak_load;
+            peakVal.innerHTML = `${s.peak_load.toFixed(2)}<small class="text-sm">kW</small>`;
+            offpeakSlider.value = s.off_peak_load;
+            offpeakVal.innerHTML = `${s.off_peak_load.toFixed(2)}<small class="text-sm">kW</small>`;
+        };
+
+        // Initialize
+        updateUI(state.time);
+        renderTimeline();
+        updateTick();
+        setInterval(updateTick, 60000);
+
+        peakSlider.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            peakVal.innerHTML = `${val.toFixed(2)}<small class="text-sm">kW</small>`;
+            pendingTime.peak_load = val;
+            markUnsaved();
+        });
+
+        offpeakSlider.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            offpeakVal.innerHTML = `${val.toFixed(2)}<small class="text-sm">kW</small>`;
+            pendingTime.off_peak_load = val;
+            markUnsaved();
+        });
+
+        function markUnsaved() {
+            saveBtn.classList.add('animate-pulse', 'border-rose-400', 'shadow-[0_0_20px_rgba(244,63,94,0.3)]');
+            statusText.textContent = TRANSLATIONS[lang].tuning_mode;
+        }
+
+        saveBtn.addEventListener('click', () => {
+            StateManager.set('time', pendingTime);
+            saveBtn.classList.remove('animate-pulse', 'border-rose-400', 'shadow-[0_0_20px_rgba(244,63,94,0.3)]');
+            saveBtn.textContent = TRANSLATIONS[lang].changes_saved;
+            statusText.textContent = TRANSLATIONS[lang].strategy_committed;
+            setTimeout(() => {
+                saveBtn.textContent = TRANSLATIONS[lang].save_btn;
+            }, 2000);
+        });
+
+        // AI Command Processing
+        aiCommandInput.addEventListener('keypress', async (e) => {
+            if (e.key === 'Enter' && aiCommandInput.value.trim()) {
+                const cmd = aiCommandInput.value.trim();
+                aiCommandInput.value = '';
+                aiStatusPulse.style.opacity = '1';
+
+                try {
+                    const forecast = TRANSLATIONS[lang].solar_high_desc;
+                    const result = await auraAI.processCommand(cmd, state.time, {}, forecast, lang);
+
+                    if (result.feedback) {
+                        aiInsightText.textContent = result.feedback;
+                        aiInsightText.className = "text-[10px] leading-relaxed text-rose-300 italic font-medium mb-4 animate-in fade-in slide-in-from-bottom-1";
+                    }
+
+                    if (result.delta && result.delta.time) {
+                        pendingTime = { ...pendingTime, ...result.delta.time };
+                        StateManager.set('time', pendingTime);
+                        updateUI(pendingTime);
+                    }
+                } catch (err) {
+                    aiInsightText.textContent = TRANSLATIONS[lang].econ_neural_drift;
+                } finally {
+                    aiStatusPulse.style.opacity = '0';
+                }
+            }
+        });
+
+        StateManager.subscribe((newState) => {
+            state = newState;
+            updateUI(state.time);
+        });
+    </script>
+</body>
+
+</html>

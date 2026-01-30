@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n="index_title">Tasman Logic // Digital Twin</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+
+<body class="bg-[#020617] text-slate-200 min-h-screen overflow-hidden font-sans antialiased">
+  <div id="app">
+    <!-- Background Matrix/Twin Simulation -->
+    <canvas id="twin-canvas" class="fixed inset-0 pointer-events-none opacity-40"></canvas>
+
+    <!-- Main HUD Overlay -->
+    <main class="relative z-10 grid grid-cols-12 grid-rows-6 gap-4 p-6 h-screen">
+
+      <!-- Header -->
+      <header class="col-span-12 row-span-1 flex justify-between items-center border-b border-slate-800/50 pb-4">
+        <div class="flex flex-col">
+          <h1 class="text-2xl font-black tracking-tighter text-cyan-400">
+            <span data-i18n="title">TASMAN LOGIC</span>
+            <span class="text-xs font-normal text-slate-500 ml-2" data-i18n="subtitle">// TASMAN LOGIC v1.0</span>
+          </h1>
+          <p class="text-[10px] font-mono text-slate-400">
+            <span data-i18n="coord">COORD</span>: -42.8887, 147.3364 |
+            <span data-i18n="status">STATUS</span>: <span data-i18n="inferring"
+              class="text-cyan-500">SHADOW_INFERRING</span>
+          </p>
+        </div>
+
+        <!-- Language Toggle -->
+        <div class="flex gap-2">
+          <button id="lang-zh"
+            class="px-2 py-1 text-[10px] border border-slate-700 rounded hover:bg-slate-800 transition-colors">中文</button>
+          <button id="lang-en"
+            class="px-2 py-1 text-[10px] border border-slate-700 rounded hover:bg-slate-800 transition-colors">EN</button>
+          <div class="ml-4 text-right border-l border-slate-800 pl-4">
+            <div id="date-val" class="text-[10px] text-purple-600 font-technical uppercase mb-0.5">2026-01-27 TUE</div>
+            <div class="text-2xl font-mono text-purple-400 leading-none" id="clock">23:51:42</div>
+            <div class="text-[10px] text-slate-500 uppercase tracking-widest mt-1"><span data-i18n="window">Decision
+                Window</span>: 30m</div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Left: Field & Space Status -->
+      <section class="col-span-3 row-span-4 glass-panel rounded-lg p-5 space-y-6">
+        <div>
+          <a href="./field.html" class="group block">
+            <h2
+              class="text-xs font-bold text-cyan-500 mb-4 flex justify-between items-center group-hover:text-cyan-400 transition-colors">
+              <span class="flex items-center gap-2">
+                <span
+                  class="w-2 h-2 bg-cyan-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,211,238,0.5)]"></span>
+                <span data-i18n="field">FIELD TWIN // FIELD</span>
+              </span>
+              <span class="text-[9px] opacity-0 group-hover:opacity-100 transition-opacity">EDIT →</span>
+            </h2>
+          </a>
+          <div class="space-y-4">
+            <div class="flex justify-between items-end border-b border-white/5 pb-2">
+              <span class="text-xs text-slate-500" data-i18n="static_load">Static Base Load</span>
+              <span id="static-load-val" class="text-lg font-mono font-technical">0.85 <small
+                  class="text-xs text-slate-600">kW</small></span>
+            </div>
+            <div class="flex justify-between items-end border-b border-white/5 pb-2">
+              <span class="text-xs text-slate-500" data-i18n="habit_profile">User Habit Profile</span>
+              <span id="habit-val" class="text-[10px] font-mono text-slate-300 font-technical">HOME_OFFICE</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <a href="./space.html" class="group block">
+            <h2
+              class="text-xs font-bold text-green-500 mb-4 flex justify-between items-center group-hover:text-green-400 transition-colors">
+              <span class="flex items-center gap-2">
+                <span class="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.5)]"></span>
+                <span data-i18n="space">SPACE LEARNER // SPACE</span>
+              </span>
+              <span class="text-[9px] opacity-0 group-hover:opacity-100 transition-opacity">EDIT →</span>
+            </h2>
+          </a>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-slate-800/30 p-2 rounded border border-white/5">
+              <p class="text-[9px] text-slate-500 uppercase" data-i18n="outdoor_temp">Outdoor Temp</p>
+              <p id="outdoor-temp-val" class="text-sm font-mono text-green-400 font-technical">14.5°C</p>
+            </div>
+            <div class="bg-slate-800/30 p-2 rounded relative border border-white/5">
+              <p class="text-[9px] text-slate-500 uppercase" data-i18n="indoor_temp">Indoor Target</p>
+              <p id="indoor-target-val" class="text-sm font-mono text-green-400 font-technical">22.0°C</p>
+              <div id="override-indicator"
+                class="absolute top-1 right-1 w-1.5 h-1.5 bg-red-500 rounded-full hidden shadow-[0_0_8px_rgba(239,68,68,0.8)]"
+                title="Override Active"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Center: Dynamic Matrix Visualization -->
+      <section class="col-span-6 row-span-4 flex items-center justify-center relative">
+        <div class="absolute inset-0 flex items-center justify-center">
+          <!-- Central Hexagon / Matrix Core -->
+          <div id="stress-core"
+            class="w-[1600px] h-[1600px] flex items-center justify-center relative transition-all duration-1000">
+            <canvas id="matrix-core-canvas" class="absolute inset-0 w-full h-full opacity-100"></canvas>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Right: Energy Assets -->
+      <section class="col-span-3 row-span-4 glass-panel rounded-lg p-5 space-y-4">
+        <a href="./energy.html" class="group block">
+          <h2
+            class="text-xs font-bold text-yellow-500 mb-4 flex justify-between items-center group-hover:text-yellow-400 transition-colors">
+            <span class="flex items-center gap-2">
+              <span class="w-2 h-2 bg-yellow-500 rounded-full shadow-[0_0_8px_rgba(234,179,8,0.5)]"></span>
+              <span data-i18n="energy">ENERGY CURATOR // ENERGY</span>
+            </span>
+            <span class="text-[9px] opacity-0 group-hover:opacity-100 transition-opacity">EDIT →</span>
+          </h2>
+        </a>
+
+        <!-- AI Neural Console -->
+        <div
+          class="mb-6 p-4 bg-purple-500/5 border border-purple-500/20 rounded-lg glass-card relative overflow-hidden group">
+          <div class="absolute top-0 left-0 w-1 h-full bg-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.5)]"></div>
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="text-[9px] font-black text-purple-400 uppercase tracking-[0.3em] flex items-center gap-2">
+              <span class="relative flex h-1.5 w-1.5">
+                <span
+                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-purple-500"></span>
+              </span>
+              AURA NEURAL CONSOLE
+            </h3>
+            <span class="text-[7px] text-purple-900/40 font-mono tracking-tighter">COGNITIVE SYNC: ACTIVE</span>
+          </div>
+          <p id="ai-insight-text" class="text-[10px] leading-relaxed text-slate-300 italic font-medium mb-4"
+            data-i18n="neural_initializing">
+            Neural link initializing... Awaiting system telemetry.
+          </p>
+
+          <div class="relative mt-4 group/input">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-[8px] text-purple-600 font-black">CMD></span>
+            </div>
+            <input type="text" id="ai-command-input"
+              class="block w-full pl-10 pr-3 py-2 bg-purple-950/20 border border-purple-500/20 rounded-md text-[10px] text-purple-200 placeholder-purple-900/50 focus:outline-none focus:border-purple-500/50 transition-all font-mono"
+              placeholder="..." data-i18n-placeholder="cmd_placeholder">
+            <div id="ai-status-pulse"
+              class="absolute inset-y-0 right-0 pr-3 flex items-center opacity-0 transition-opacity">
+              <span class="text-[6px] text-purple-500 animate-pulse uppercase select-none"
+                data-i18n="processing">Processing...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Assets list -->
+        <div class="space-y-4">
+          <div class="asset-card">
+            <div class="flex justify-between text-[9px] mb-1 uppercase font-bold tracking-tight">
+              <span class="text-slate-500" data-i18n="irradiance">Solar Irradiance</span>
+              <span id="irradiance-val" class="text-yellow-400 font-technical">-- W/m²</span>
+            </div>
+            <div class="w-full bg-slate-800/50 h-1 rounded-full overflow-hidden border border-white/5">
+              <div class="bg-yellow-500 h-full w-[0%] shadow-[0_0_8px_rgba(234,179,8,0.4)]" id="pv-progress"></div>
+            </div>
+            <div class="text-[8px] text-right text-slate-500 mt-1 uppercase"><span data-i18n="pv_output">PV
+                Output</span>: <span id="pv-power-val" class="font-technical text-slate-300">-- kW</span></div>
+          </div>
+
+          <div class="asset-card">
+            <div class="flex justify-between text-[9px] mb-1 uppercase font-bold tracking-tight">
+              <span class="text-slate-500" data-i18n="batt_soc">Battery SoC</span>
+              <span id="batt-soc-val" class="text-cyan-400 font-technical">--%</span>
+            </div>
+            <div class="w-full bg-slate-800/50 h-1 rounded-full overflow-hidden border border-white/5">
+              <div class="bg-cyan-500 h-full w-[0%] shadow-[0_0_8px_rgba(34,211,238,0.4)]" id="batt-progress"></div>
+            </div>
+          </div>
+
+          <div class="asset-card">
+            <div class="flex justify-between text-[9px] mb-1 uppercase font-bold tracking-tight">
+              <span class="text-slate-500">HEAT PUMP (<span data-i18n="hp_cop">COP</span>: <span id="cop-val"
+                  class="font-technical">--</span>)</span>
+              <span id="hp-power-val" class="text-rose-400 font-technical">-- kW</span>
+            </div>
+            <div class="w-full bg-slate-800/50 h-1 rounded-full overflow-hidden border border-white/5">
+              <div class="bg-rose-500 h-full w-[18%] shadow-[0_0_8px_rgba(244,63,94,0.4)]"></div>
+            </div>
+          </div>
+
+          <div class="asset-card">
+            <div class="flex justify-between text-[9px] mb-1 uppercase font-bold tracking-tight">
+              <span class="text-slate-500" data-i18n="dhw_status">Hot Water Stock</span>
+              <span id="dhw-temp-val" class="text-orange-400 font-technical">--°C</span>
+            </div>
+            <div class="w-full bg-slate-800/50 h-1 rounded-full overflow-hidden border border-white/5">
+              <div class="bg-orange-500 h-full w-[0%] shadow-[0_0_8px_rgba(249,115,22,0.4)]" id="dhw-progress"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Redline Warning -->
+        <div class="mt-8 p-4 border border-rose-500/20 bg-rose-500/5 rounded-lg glass-card">
+          <p class="text-[8px] font-bold text-rose-500 uppercase tracking-[0.3em] mb-1" data-i18n="redline">Safety
+            Redline</p>
+          <p class="text-xl font-black text-rose-400 font-technical">8.5 kW</p>
+          <p class="text-[8px] text-rose-800 mt-1 uppercase" id="total-load-val">CURRENT TOTAL: --kW</p>
+        </div>
+      </section>
+
+      <!-- Bottom: Time & Log -->
+      <footer class="col-span-12 row-span-1 glass-panel rounded-lg p-3 flex gap-4 overflow-hidden">
+        <div class="w-1/3 border-r border-white/5 pr-4">
+          <a href="./time.html" class="group block">
+            <p
+              class="text-[8px] uppercase text-slate-500 mb-2 flex justify-between group-hover:text-purple-400 transition-colors tracking-widest">
+              <span data-i18n="grid_strategy">GRID GOVERNANCE STRATEGY</span>
+              <span class="opacity-0 group-hover:opacity-100 transition-opacity">PARAM →</span>
+            </p>
+          </a>
+          <div class="flex items-center gap-3">
+            <span id="grid-period-val"
+              class="px-2 py-1 bg-yellow-900/40 text-yellow-500 text-[8px] rounded font-black uppercase tracking-tighter transition-all">
+              --</span>
+            <span class="text-sm font-mono text-slate-300 font-technical">$<span id="grid-price-val">0.00</span><span
+                data-i18n="price_unit" class="text-[8px] opacity-50 ml-1">/kWh</span></span>
+          </div>
+          <p id="grid-strategy-desc" class="text-[7px] text-slate-600 mt-2 uppercase italic font-technical"></p>
+        </div>
+        <div class="flex-1 flex flex-col justify-center">
+          <p class="text-[8px] uppercase text-slate-600 mb-1 tracking-widest" data-i18n="logs">Live Shadow Logs</p>
+          <div id="logs" class="text-[10px] font-mono text-slate-400 font-technical italic text-cyan-400/80"
+            data-i18n="sys_init_log">
+            [SYSTEM] Initializing Tasman Logic...
+          </div>
+        </div>
+      </footer>
+
+    </main>
+  </div>
+  <script type="module" src="/main.js"></script>
+</body>
+
+</html>

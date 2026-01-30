@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "system-ui", "-apple-system", "sans-serif";
+  --animate-spin-slow: spin 8s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(8, 145, 178, 0.05) 0%, transparent 80%),
+    linear-gradient(rgba(15, 23, 42, 1) 0%, rgba(2, 6, 23, 1) 100%);
+}
+
+/* Global Transitions for Asset HUD */
+.asset-card [id$="-progress"] {
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Stress Glow Effects */
+@keyframes stress-pulse {
+  0% {
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.1);
+  }
+
+  50% {
+    box-shadow: 0 0 40px rgba(34, 211, 238, 0.4);
+  }
+
+  100% {
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.1);
+  }
+}
+
+.stress-high {
+  animation: stress-pulse-red 2s ease-in-out infinite;
+  color: #f43f5e !important;
+}
+
+@keyframes stress-pulse-red {
+  0% {
+    box-shadow: 0 0 10px rgba(244, 63, 94, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 0 50px rgba(244, 63, 94, 0.6);
+  }
+
+  100% {
+    box-shadow: 0 0 10px rgba(244, 63, 94, 0.2);
+  }
+}
+
+/* Glassmorphism Utilities */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-card {
+  background: rgba(30, 41, 59, 0.4);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Typography Enhancements */
+.font-technical {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  letter-spacing: -0.05em;
+}
+
+/* Scrollbar styling for a cleaner look */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(34, 211, 238, 0.2);
+  border-radius: 10px;
+}
