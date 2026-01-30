@@ -15,12 +15,12 @@ export const GeminiAPI = {
         }
 
         // Expanded list of model/version candidates to pierce through 404s
+        // Optimized list of model/version candidates
         const attempts = [
-            { ver: 'v1beta', model: 'gemini-1.5-flash-latest' },
             { ver: 'v1beta', model: 'gemini-1.5-flash' },
+            { ver: 'v1beta', model: 'gemini-1.5-pro' },
             { ver: 'v1', model: 'gemini-1.5-flash' },
-            { ver: 'v1', model: 'gemini-pro' },
-            { ver: 'v1beta', model: 'gemini-pro' }
+            { ver: 'v1', model: 'gemini-pro' }
         ];
 
         let lastError = null;

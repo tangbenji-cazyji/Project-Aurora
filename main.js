@@ -230,6 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     aiInput?.addEventListener('keydown', async (e) => {
         if (e.key === 'Enter' && aiInput.value.trim()) {
+            e.preventDefault();
             const cmd = aiInput.value.trim();
             aiInput.value = '';
             aiInput.disabled = true;
